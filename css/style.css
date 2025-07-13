@@ -347,3 +347,52 @@ label {
         width: 100%;
     }
 }
+
+/* よく使う名前 */
+.frequent-participants-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+}
+
+.frequent-participant-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background-color: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.frequent-participant-item label {
+    margin-bottom: 0; /* Override default label style */
+    cursor: pointer;
+}
+
+.participant-group-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.participant-group-buttons .btn {
+    flex: 1 1 auto;
+}
+
+#add-selected-participants {
+    width: 100%;
+    margin-top: 0.5rem;
+    background-color: var(--light-color);
+    border-color: var(--border-color);
+    color: var(--dark-color);
+}
+
+#add-selected-participants:hover:not(:disabled) {
+    background-color: #e2e6ea;
+}

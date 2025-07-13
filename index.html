@@ -32,13 +32,28 @@
                 </div>
                 
                 <div class="form-group">
+                    <h3>参加者</h3>
+                    
+                    <!-- よく使う名前 -->
+                    <div id="participant-group-buttons" class="participant-group-buttons">
+                        <button id="select-all" class="btn secondary">全員</button>
+                        <button id="select-omoya" class="btn secondary">母屋</button>
+                        <button id="select-shinji" class="btn secondary">しんじ</button>
+                        <button id="select-nakano" class="btn secondary">中野家</button>
+                    </div>
+                    <div id="frequent-participants-container" class="frequent-participants-container">
+                        <!-- よく使う名前がここに表示されます -->
+                    </div>
+                    <button id="add-selected-participants" class="btn secondary">選択したメンバーを追加</button>
+                    
+                    <!-- 参加者手動追加 -->
                     <div class="form-header">
-                        <h3>参加者</h3>
                         <div class="add-participant">
-                            <input type="text" id="participant-name" class="input" placeholder="参加者名">
+                            <input type="text" id="participant-name" class="input" placeholder="新しい参加者名">
                             <button id="add-participant" class="btn primary">追加</button>
                         </div>
                     </div>
+                    
                     <ul id="participants-list" class="participants-list">
                         <!-- 参加者一覧がここに表示されます -->
                     </ul>

@@ -2,7 +2,16 @@
 const state = {
     events: JSON.parse(localStorage.getItem('orderEvents')) || [],
     currentEventId: null,
-    currentView: 'event-list' // 'event-list', 'event-edit', 'order-screen', 'summary-screen'
+    currentView: 'event-list', // 'event-list', 'event-edit', 'order-screen', 'summary-screen'
+    frequentParticipants: [
+        "こうじ", "さちえ", "めぐみ", "しんじ", "さやか", "ほのか", "えいじ", 
+        "ゆうじ", "やすたか", "みゆき", "ゆうか", "しほ", "きよこ"
+    ],
+    participantGroups: {
+        omoya: ["こうじ", "さちえ", "めぐみ"],
+        shinji: ["しんじ", "さやか", "ほのか", "えいじ", "ゆうじ"],
+        nakano: ["やすたか", "みゆき", "ゆうか", "しほ"]
+    }
 };
 
 // DOM要素を取得
@@ -27,6 +36,14 @@ const elements = {
     addParticipantBtn: document.getElementById('add-participant'),
     participantsList: document.getElementById('participants-list'),
     startOrderingBtn: document.getElementById('start-ordering'),
+    frequentParticipantsContainer: document.getElementById('frequent-participants-container'),
+    addSelectedParticipantsBtn: document.getElementById('add-selected-participants'),
+    participantGroupButtons: {
+        all: document.getElementById('select-all'),
+        omoya: document.getElementById('select-omoya'),
+        shinji: document.getElementById('select-shinji'),
+        nakano: document.getElementById('select-nakano')
+    },
     
     // 注文入力画面
     backToEditBtn: document.getElementById('back-to-edit'),
@@ -49,6 +66,9 @@ function init() {
     
     // イベント一覧を表示
     renderEventList();
+    
+    // よく使う名前を表示
+    renderFrequentParticipants();
 }
 
 // イベントリスナーの設定
@@ -71,11 +91,20 @@ function setupEventListeners() {
     });
     
     // 参加者追加ボタン
-    elements.addParticipantBtn.addEventListener('click', addParticipant);
+    elements.addParticipantBtn.addEventListener('click', () => addParticipantFromInput());
     elements.participantNameInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') addParticipant();
+        if (e.key === 'Enter') addParticipantFromInput();
     });
     
+    // 選択したメンバーを追加ボタン
+    elements.addSelectedParticipantsBtn.addEventListener('click', addSelectedParticipants);
+    
+    // グループ選択ボタン
+    elements.participantGroupButtons.all.addEventListener('click', () => toggleGroupSelection(state.frequentParticipants));
+    elements.participantGroupButtons.omoya.addEventListener('click', () => toggleGroupSelection(state.participantGroups.omoya));
+    elements.participantGroupButtons.shinji.addEventListener('click', () => toggleGroupSelection(state.participantGroups.shinji));
+    elements.participantGroupButtons.nakano.addEventListener('click', () => toggleGroupSelection(state.participantGroups.nakano));
+
     // 注文を開始ボタン
     elements.startOrderingBtn.addEventListener('click', startOrdering);
     
@@ -119,6 +148,7 @@ function showView(viewName) {
             break;
         case 'event-edit':
             elements.screens.eventEdit.classList.add('active');
+            renderFrequentParticipants(); // 編集画面表示時にチェックボックスを再描画
             elements.eventNameInput.focus();
             break;
         case 'order-screen':
@@ -168,15 +198,64 @@ function renderEventList() {
     });
 }
 
-// 参加者を追加
-function addParticipant() {
+// よく使う名前をチェックボックスで表示
+function renderFrequentParticipants() {
+    elements.frequentParticipantsContainer.innerHTML = '';
+    state.frequentParticipants.forEach(name => {
+        const item = document.createElement('div');
+        item.className = 'frequent-participant-item';
+        item.innerHTML = `
+            <input type="checkbox" id="freq-${name}" value="${name}">
+            <label for="freq-${name}">${name}</label>
+        `;
+        elements.frequentParticipantsContainer.appendChild(item);
+    });
+}
+
+// 選択したメンバーを参加者リストに追加
+function addSelectedParticipants() {
+    const checkboxes = elements.frequentParticipantsContainer.querySelectorAll('input[type="checkbox"]:checked');
+    checkboxes.forEach(checkbox => {
+        addParticipant(checkbox.value);
+        checkbox.checked = false; // 追加後はチェックを外す
+    });
+}
+
+// グループ選択の切り替え
+function toggleGroupSelection(group) {
+    const allChecked = group.every(name => {
+        const checkbox = document.getElementById(`freq-${name}`);
+        return checkbox && checkbox.checked;
+    });
+
+    group.forEach(name => {
+        const checkbox = document.getElementById(`freq-${name}`);
+        if (checkbox) {
+            checkbox.checked = !allChecked;
+        }
+    });
+}
+
+// 手動入力で参加者を追加
+function addParticipantFromInput() {
     const name = elements.participantNameInput.value.trim();
-    
-    if (!name) {
+    if (name) {
+        addParticipant(name);
+        elements.participantNameInput.value = '';
+        elements.participantNameInput.focus();
+    } else {
         alert('参加者名を入力してください。');
-        return;
     }
-    
+}
+
+// 参加者をリストに追加（共通処理）
+function addParticipant(name) {
+    // 既に追加されているか確認
+    const existingParticipants = Array.from(elements.participantsList.querySelectorAll('.participant-item')).map(item => item.dataset.name);
+    if (existingParticipants.includes(name)) {
+        return; // 既に追加済みなら何もしない
+    }
+
     const participantItem = document.createElement('li');
     participantItem.className = 'participant-item';
     participantItem.dataset.name = name;
@@ -192,8 +271,6 @@ function addParticipant() {
     });
     
     elements.participantsList.appendChild(participantItem);
-    elements.participantNameInput.value = '';
-    elements.participantNameInput.focus();
 }
 
 // イベントを編集
@@ -208,21 +285,7 @@ function editEvent(eventId) {
     // 参加者を表示
     if (event.participants && event.participants.length > 0) {
         event.participants.forEach(participant => {
-            const participantItem = document.createElement('li');
-            participantItem.className = 'participant-item';
-            participantItem.dataset.name = participant;
-            participantItem.innerHTML = `
-                <span>${participant}</span>
-                <button class="btn danger remove-participant">削除</button>
-            `;
-            
-            // 削除ボタンのイベントリスナー
-            participantItem.querySelector('.remove-participant').addEventListener('click', (e) => {
-                e.stopPropagation();
-                participantItem.remove();
-            });
-            
-            elements.participantsList.appendChild(participantItem);
+            addParticipant(participant);
         });
     }
     
