@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>みんなの注文メモ</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app">
+        <!-- イベント一覧画面 -->
+        <div id="event-list" class="screen active">
+            <h1>みんなの注文メモ</h1>
+            <button id="new-event" class="btn primary">+ 新しいイベント</button>
+            <div id="events-container" class="events-container">
+                <!-- イベント一覧がここに表示されます -->
+                <p id="no-events">イベントがありません。新しいイベントを作成してください。</p>
+            </div>
+        </div>
+
+        <!-- イベント編集画面 -->
+        <div id="event-edit" class="screen">
+            <div class="header">
+                <button id="back-to-list" class="btn back-btn">← 戻る</button>
+                <h2 id="edit-title">新しいイベント</h2>
+            </div>
+            
+            <div class="content">
+                <div class="form-group">
+                    <label for="event-name">イベント名</label>
+                    <input type="text" id="event-name" class="input" placeholder="例: お盆の集まり">
+                </div>
+                
+                <div class="form-group">
+                    <div class="form-header">
+                        <h3>参加者</h3>
+                        <div class="add-participant">
+                            <input type="text" id="participant-name" class="input" placeholder="参加者名">
+                            <button id="add-participant" class="btn primary">追加</button>
+                        </div>
+                    </div>
+                    <ul id="participants-list" class="participants-list">
+                        <!-- 参加者一覧がここに表示されます -->
+                    </ul>
+                </div>
+                
+                <button id="start-ordering" class="btn primary large">注文を開始する</button>
+            </div>
+        </div>
+
+        <!-- 注文入力画面 -->
+        <div id="order-screen" class="screen">
+            <div class="header">
+                <button id="back-to-edit" class="btn back-btn">← 戻る</button>
+                <h2 id="order-title">注文入力</h2>
+            </div>
+            
+            <div id="order-container" class="order-container">
+                <!-- 参加者ごとの注文入力欄がここに表示されます -->
+            </div>
+            
+            <div class="action-buttons">
+                <button id="view-summary" class="btn primary large">集計を見る</button>
+            </div>
+        </div>
+
+        <!-- 集計画面 -->
+        <div id="summary-screen" class="screen">
+            <div class="header">
+                <button id="back-to-orders" class="btn back-btn">← 戻る</button>
+                <h2>注文の集計</h2>
+            </div>
+            
+            <div id="summary-container" class="summary-container">
+                <!-- 集計結果がここに表示されます -->
+            </div>
+            
+            <div class="action-buttons">
+                <button id="print-summary" class="btn primary">印刷する</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
